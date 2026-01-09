@@ -6,7 +6,7 @@
     <RootNamespace>sports_mcp</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <UserSecretsId>sports-mcp-unsplash-api</UserSecretsId>
+    <UserSecretsId>sports-mcp-api</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

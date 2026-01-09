@@ -20,9 +20,9 @@ builder.Logging.AddConsole(options =>
     options.LogToStandardErrorThreshold = LogLevel.Trace;
 });
 
-// Configure ImageApiOptions with validation
-builder.Services.AddOptions<ImageApiOptions>()
-    .Bind(builder.Configuration.GetSection("ImageApi"))
+// Configure SportsApiOptions with validation
+builder.Services.AddOptions<SportsApiOptions>()
+    .Bind(builder.Configuration.GetSection("SportsApi"))
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
@@ -32,9 +32,10 @@ builder.Services.AddMcpServer()
 
 builder.Services.AddSingleton<HttpClient>(sp =>
 {
-    var options = sp.GetRequiredService<IOptions<ImageApiOptions>>().Value;
-    var client = new HttpClient() { BaseAddress = new Uri(options.BaseUrl) };
-    client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("sports-search", "1.0"));
+    var options = sp.GetRequiredService<IOptions<SportsApiOptions>>().Value;
+    var handler = new HttpClientHandler();
+    var client = new HttpClient(handler) { BaseAddress = new Uri(options.BaseUrl) };
+    client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36");
     return client;
 });
 
