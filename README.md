@@ -304,7 +304,7 @@ This server retrieves data from ESPN's public sports API endpoints. The data is 
 
 ## License
 
-[Add your license here]
+This project is licensed under the [MIT License](LICENSE).
 
 ## Contributing
 
