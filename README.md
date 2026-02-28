@@ -205,11 +205,51 @@ dotnet run
 
 ### Testing
 
-The server communicates via stdio using the Model Context Protocol. To test:
+The project includes a comprehensive unit test suite in the `sports-mcp.Tests` project. Tests are written using [xUnit](https://xunit.net/) and cover all major components of the server.
 
-1. Configure it in an MCP client
-2. Restart the client
-3. Ask sports-related questions to verify functionality
+#### Running Tests
+
+```bash
+dotnet test
+```
+
+To run with detailed output:
+
+```bash
+dotnet test --verbosity normal
+```
+
+#### Test Coverage
+
+The test suite covers:
+
+- **Sports & League enums** (`Models/SportsExtensionsTests.cs`, `Models/LeaguesExtensionsTests.cs`): Verifies every `Sports` and `Leagues` enum value maps to the correct ESPN API path segment.
+- **Scoreboard DTO parsing** (`Models/ScoreboardDtoTests.cs`): Validates JSON-to-DTO deserialization for all data classes including league info, game status, venue details, team competitors, game events, and full scoreboard responses. Edge cases such as missing optional fields, empty event lists, and international venues are tested.
+- **HTTP client extension** (`Extensions/HttpClientExtTests.cs`): Tests successful JSON document retrieval, HTTP error propagation, and that request URIs are constructed correctly.
+- **GetScoreboard tool** (`Tools/SportsScoreboardToolTests.cs`): End-to-end tests using a mock HTTP handler that verify the correct URL is built from sport/league/date parameters, that valid responses are deserialized and serialised as indented JSON, and that HTTP or deserialization errors produce a well-formed error JSON response.
+
+#### Testing Approach
+
+The server communicates over stdio using the MCP protocol, so its individual components are tested in isolation:
+
+- **Static tool methods** (`SportsScoreboardTool.GetScoreboard`) accept `HttpClient` and `IOptions<SportsApiOptions>` as explicit parameters, making it straightforward to supply a test double without any DI container.
+- **HTTP layer** is faked using a lightweight in-process `HttpMessageHandler` subclass. This avoids network calls and third-party mock libraries.
+- **Configuration** is supplied via `Microsoft.Extensions.Options.Options.Create()`, keeping tests self-contained.
+- **Internal types** (e.g., `HttpClientExt`) are exposed to the test project through `[InternalsVisibleTo("sports-mcp.Tests")]` in the main project.
+
+#### Project Structure
+
+```
+sports-mcp.Tests/
+├── Extensions/
+│   └── HttpClientExtTests.cs   # HTTP client extension tests
+├── Models/
+│   ├── LeaguesExtensionsTests.cs  # League enum mapping tests
+│   ├── ScoreboardDtoTests.cs      # DTO JSON parsing tests
+│   └── SportsExtensionsTests.cs   # Sport enum mapping tests
+└── Tools/
+    └── SportsScoreboardToolTests.cs  # GetScoreboard tool tests
+```
 
 ### Project Structure
 
