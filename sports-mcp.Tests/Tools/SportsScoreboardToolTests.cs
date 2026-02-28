@@ -111,7 +111,7 @@ public class SportsScoreboardToolTests
 
         var result = await SportsScoreboardTool.GetScoreboard(client, options, Sports.Basketball, Leagues.NBA);
 
-        var json = JsonDocument.Parse(result);
+        using var json = JsonDocument.Parse(result);
         Assert.Equal("NBA", json.RootElement.GetProperty("League").GetProperty("Abbreviation").GetString());
         Assert.Equal(1, json.RootElement.GetProperty("Events").GetArrayLength());
     }
@@ -124,7 +124,7 @@ public class SportsScoreboardToolTests
 
         var result = await SportsScoreboardTool.GetScoreboard(client, options, Sports.Basketball, Leagues.NBA);
 
-        var json = JsonDocument.Parse(result);
+        using var json = JsonDocument.Parse(result);
         var firstEvent = json.RootElement.GetProperty("Events")[0];
         Assert.Equal("401591906", firstEvent.GetProperty("Id").GetString());
         Assert.Equal("Oklahoma City Thunder at Charlotte Hornets", firstEvent.GetProperty("Name").GetString());
@@ -139,7 +139,7 @@ public class SportsScoreboardToolTests
 
         var result = await SportsScoreboardTool.GetScoreboard(client, options, Sports.Basketball, Leagues.NBA);
 
-        var json = JsonDocument.Parse(result);
+        using var json = JsonDocument.Parse(result);
         var competitors = json.RootElement.GetProperty("Events")[0].GetProperty("Competitors");
         Assert.Equal(2, competitors.GetArrayLength());
 
@@ -220,6 +220,31 @@ public class SportsScoreboardToolTests
     }
 
     [Fact]
+    public async Task GetScoreboard_UppercaseLeagueMappings_ArePassedThroughAsLowercase()
+    {
+        // UEFAEuropaLeague maps to "UEFA.EUROPA" which the tool lowercases when building the URL.
+        // This test guards against casing regressions in league-to-path mapping or URL building.
+        string? capturedUrl = null;
+
+        var handler = new CapturingHttpMessageHandler(req =>
+        {
+            capturedUrl = req.RequestUri?.ToString();
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(ValidNbaScoreboardJson, Encoding.UTF8, "application/json")
+            };
+        });
+
+        using var client = new HttpClient(handler) { BaseAddress = new Uri("http://test.espn.com/") };
+        var options = CreateOptions();
+
+        await SportsScoreboardTool.GetScoreboard(client, options, Sports.Soccer, Leagues.UEFAEuropaLeague);
+
+        Assert.NotNull(capturedUrl);
+        Assert.Contains("sports/soccer/uefa.europa/scoreboard", capturedUrl);
+    }
+
+    [Fact]
     public async Task GetScoreboard_HttpError_ReturnsErrorJson()
     {
         using var client = CreateHttpClient("Not Found", HttpStatusCode.NotFound);
@@ -227,7 +252,7 @@ public class SportsScoreboardToolTests
 
         var result = await SportsScoreboardTool.GetScoreboard(client, options, Sports.Basketball, Leagues.NBA);
 
-        var json = JsonDocument.Parse(result);
+        using var json = JsonDocument.Parse(result);
         Assert.True(json.RootElement.TryGetProperty("error", out _));
     }
 
@@ -239,8 +264,8 @@ public class SportsScoreboardToolTests
 
         var result = await SportsScoreboardTool.GetScoreboard(client, options, Sports.Basketball, Leagues.NBA);
 
-        var json = JsonDocument.Parse(result);
-        Assert.True(json.RootElement.TryGetProperty("error", out _));
+        using var json2 = JsonDocument.Parse(result);
+        Assert.True(json2.RootElement.TryGetProperty("error", out _));
     }
 
     [Fact]
@@ -260,7 +285,7 @@ public class SportsScoreboardToolTests
 
         var result = await SportsScoreboardTool.GetScoreboard(client, options, Sports.Basketball, Leagues.NBA);
 
-        var json = JsonDocument.Parse(result);
+        using var json = JsonDocument.Parse(result);
         Assert.Equal(0, json.RootElement.GetProperty("Events").GetArrayLength());
         Assert.Equal("NBA", json.RootElement.GetProperty("League").GetProperty("Abbreviation").GetString());
     }

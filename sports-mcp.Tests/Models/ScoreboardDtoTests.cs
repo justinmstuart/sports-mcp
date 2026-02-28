@@ -6,8 +6,11 @@ namespace sports_mcp.Tests.Models;
 
 public class ScoreboardDtoTests
 {
-    private static JsonElement ParseJson(string json) =>
-        JsonDocument.Parse(json).RootElement;
+    private static JsonElement ParseJson(string json)
+    {
+        using var document = JsonDocument.Parse(json);
+        return document.RootElement.Clone();
+    }
 
     // ── LeagueDtoExtensions ─────────────────────────────────────────────────
 

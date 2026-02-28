@@ -226,7 +226,7 @@ The test suite covers:
 - **Sports & League enums** (`Models/SportsExtensionsTests.cs`, `Models/LeaguesExtensionsTests.cs`): Verifies every `Sports` and `Leagues` enum value maps to the correct ESPN API path segment.
 - **Scoreboard DTO parsing** (`Models/ScoreboardDtoTests.cs`): Validates JSON-to-DTO deserialization for all data classes including league info, game status, venue details, team competitors, game events, and full scoreboard responses. Edge cases such as missing optional fields, empty event lists, and international venues are tested.
 - **HTTP client extension** (`Extensions/HttpClientExtTests.cs`): Tests successful JSON document retrieval, HTTP error propagation, and that request URIs are constructed correctly.
-- **GetScoreboard tool** (`Tools/SportsScoreboardToolTests.cs`): End-to-end tests using a mock HTTP handler that verify the correct URL is built from sport/league/date parameters, that valid responses are deserialized and serialised as indented JSON, and that HTTP or deserialization errors produce a well-formed error JSON response.
+- **GetScoreboard tool** (`Tools/SportsScoreboardToolTests.cs`): End-to-end tests using a mock HTTP handler that verify the correct URL is built from sport/league/date parameters, that valid responses are deserialized and serialized as indented JSON, and that HTTP or deserialization errors produce a well-formed error JSON response.
 
 #### Testing Approach
 
