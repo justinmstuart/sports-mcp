@@ -1,5 +1,7 @@
 # Sports MCP Server
 
+[![CI](https://github.com/justinmstuart/sports-mcp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/justinmstuart/sports-mcp/actions/workflows/ci.yml)
+
 A Model Context Protocol (MCP) server that provides real-time sports scores, schedules, and game information from ESPN's sports API. This server enables AI assistants to answer questions about game results, schedules, team performance, and sports outcomes across professional and college leagues.
 
 ## Features
